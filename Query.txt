@@ -1,0 +1,99 @@
+create database HR_DATA  
+use HR_DATA
+
+drop database HR_DATA
+create table employee(
+ employeename varchar(255),  
+ empid int,
+ Marriedid int,  
+ MaritalStatusID int, 
+ genderid int,  
+ empstatus int, 
+ depid int,
+ perscoreid int, 
+ formDiversityjobfairid int, 
+ salary int,
+ PositionId int ,
+ Position varchar (255), 
+ state varchar (255), zip int, DOB varchar(255), 
+ Sex varchar(255),  Martialdesc varchar(255), 
+ citizenDesc varchar(255), 
+ Hispaniclatino varchar (255), 
+ Racedesc varchar(255),  
+ dateofhire varchar(255), 
+ dateoftermination varchar(255), 
+ termreason varchar(255), 
+ Employementstatus varchar(255),
+ Department varchar(255), 
+ Managername varchar(255),
+ ManagerId int,  
+ Recruitmentsource varchar(255), 
+ Perfomancescore varchar(255), 
+ EngagementSurvey varchar(255), 
+ EmpSatisfaction int, 
+ specialprojectcount varchar(255), 
+ lastperfomanceReview_date varchar(255),
+ DaysLateLast30 varchar(255), 
+ Absences int)
+ 
+
+select *from employee
+--1 Analyze the current workforce in terms of Maritial Status, race , Age, Gender
+
+SELECT 
+    MaritalstatusId, 
+    RaceDesc, 
+    GenderID, 
+    COUNT(*) AS employee_count,
+    AVG(YEAR(CURRENT_DATE) - YEAR(DOB)) AS average_age
+FROM 
+    employee
+GROUP BY 
+    MaritalstatusId, 
+    RaceDesc, 
+    GenderID;
+
+---2 Employees Satisfaction: Analyze the employees profile for each of  the  four performance ratings that were given in 2019(PIP, NI, Meets Exceeds)
+
+SELECT    PerformanceScore,  
+COUNT(*) AS employee_count,    
+ AVG(EmpSatisfaction) AS average_satisfaction   
+ from employee
+ WHERE     YEAR(LastPerformanceReview_Date) = 2019 
+ GROUP BY  PerformanceScore;
+
+
+
+--3 Compensation distribution: Analyze the wage bill in terms of how much is spent across each type of role (position) with in company and the average salary of position each of the roles 
+SELECT  Position ,  
+   COUNT(*) AS employee_count,   
+SUM(salary) AS total_wage_bill,   
+    AVG(salary) AS average_salary_per_person
+  FROM   
+      employee
+    GROUP BY    
+              Position;
+
+--4 Attribution analysis :Analyze how many people have left each year ,type of exist and reason given if exit was voluntary 
+
+SELECT YEAR(dateoftermination) AS ExitYear,
+       COUNT(empid) AS NumberOfExits
+FROM employee
+WHERE dateoftermination IS NOT NULL
+GROUP BY ExitYear;
+
+SELECT termreason,
+       COUNT(empid) AS ExitCount
+FROM employee
+WHERE dateoftermination IS NOT NULL
+GROUP BY termreason;
+
+  SELECT   termreason,
+    COUNT(empid) AS NumberOfVoluntaryExits
+FROM 
+    employee 
+WHERE dateoftermination IS NOT NULL 
+    AND EmploymentStatus = 'Voluntary'
+GROUP BY 
+    termreason;
+     
